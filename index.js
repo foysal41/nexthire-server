@@ -39,7 +39,7 @@ async function run() {
 
    const database = client.db("nextloop_db");
     const jobCollection = database.collection("jobs");
-   
+    const companyCollection = database.collection("companies")
 
 app.get("/api/jobs", async(req, res)=> {
     const query = {}
@@ -63,8 +63,24 @@ app.post("/api/jobs", async(req, res)=>{
     res.send(result)
 })
 
+//Browser বা frontend যখন এ request পাঠাবে, তখন এই function run হবে।
+// Recruiter ID অনুযায়ী company data fetch করার API
+app.get("/api/my/companies", async(req, res)=>{
+  const query = {};
+  if(req.query.recruiterId){
+    query.recruiterId = req.query.recruiterId;
+  }
 
+  const result = await companyCollection.findOne(query);
+  res.send(result)
+})
 
+// company releted apis
+app.post("/api/companies", async(req, res)=> {
+  const company = req.body;
+  const result = await companyCollection.insertOne(company)
+  res.send(result);
+})
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
