@@ -1,7 +1,7 @@
 
 const express = require("express");
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const dns = require('dns')
 dns.setServers(['8.8.8.8', '1.1.1.1'])
 
@@ -57,9 +57,22 @@ app.get("/api/jobs", async(req, res)=> {
 })
 
 
+app.get("/api/jobs/:id", async(req,res) => {
+    const id = req.params.id;
+    const query = {
+      _id: new ObjectId(id)
+    }
+    const result = await jobCollection.findOne(query)
+    res.send(result)
+})
+
 app.post("/api/jobs", async(req, res)=>{
     const job = req.body;
-    const result = await jobCollection.insertOne(job)
+    const newJob = {
+      ...job,
+      createdAt: new Date()
+    }
+    const result = await jobCollection.insertOne(newJob)
     res.send(result)
 })
 
@@ -78,7 +91,11 @@ app.get("/api/my/companies", async(req, res)=>{
 // company releted apis
 app.post("/api/companies", async(req, res)=> {
   const company = req.body;
-  const result = await companyCollection.insertOne(company)
+  const newCompany = {
+    ...company,
+    createdAt: new Date()
+  }
+  const result = await companyCollection.insertOne(newCompany)
   res.send(result);
 })
 
