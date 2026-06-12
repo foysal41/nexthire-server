@@ -40,6 +40,7 @@ async function run() {
    const database = client.db("nextloop_db");
     const jobCollection = database.collection("jobs");
     const companyCollection = database.collection("companies")
+    const applicationsCollection = database.collection('applications')
 
 app.get("/api/jobs", async(req, res)=> {
     const query = {}
@@ -75,6 +76,25 @@ app.post("/api/jobs", async(req, res)=>{
     const result = await jobCollection.insertOne(newJob)
     res.send(result)
 })
+
+
+//application releted api
+app.post("/api/applications", async(req, res)=> {
+  const application = req.body;
+  const newApplication = {
+    ...application,
+    createdAt: new Date()
+  }
+
+  const result = await applicationsCollection.insertOne(newApplication);
+  res.send(result);
+})
+
+
+
+
+
+
 
 //Browser বা frontend যখন এ request পাঠাবে, তখন এই function run হবে।
 // Recruiter ID অনুযায়ী company data fetch করার API
