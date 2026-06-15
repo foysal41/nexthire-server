@@ -41,6 +41,8 @@ async function run() {
     const jobCollection = database.collection("jobs");
     const companyCollection = database.collection("companies")
     const applicationsCollection = database.collection('applications')
+    const planCollection = database.collection('plans')
+    const subscriptionCollection = database.collection('subscriptions')
 
 app.get("/api/jobs", async(req, res)=> {
     const query = {}
@@ -135,6 +137,46 @@ app.post("/api/companies", async(req, res)=> {
   const result = await companyCollection.insertOne(newCompany)
   res.send(result);
 })
+
+
+
+// Plan releted work
+// Process of this user 
+/*
+1. কটা ইউজারের জন্য কি কোন সাবস্ক্রিপশনটা কিনছে তার নামে সেটা আপডেট করতে হবে.কারন আপডেট না করলে সে টাকা দিবে কিন্তু সে সে by default তিনটা জবের বেশি এপ্লাই করতে পারবেনা  
+- Src > lib> auth.js এর মধ্যে একটা ডিফল্ট plan make hobe
+- তারপর sign up page  গিয়ে ডাটাবেজ টা আপডেট করে আসব যে সে কোন plan এ আছে 
+2. যদি নামের সাথে এড করতে হয় তাহলে each ইউজারের সাথে একটা প্লান থাকবে হয়তোবা সেটা  by default free থাকবে. এভাবে recruiter থাকবে 
+3. ফাইনালি যতবারই এপ্লাই করতে যাবে আমরা দেখবো তার plan কি status সে অনুযায়ী তাকে এপ্লাই করতে দিব 
+
+
+*/ 
+app.get('/api/plans', async(req, res) => {
+  const query ={};
+  //যদি req থেকে query মদ্ধে যদি plan_id থাকে তা হলে query.plan_id  update হবে অই req.query.plan_id. eita font-end server থেকে get করতে হবে। lib > api> plan.js
+
+
+  if(req.query.plan_id){
+    query.plan_id  = req.query.plan_id
+  }
+  const plan = await planCollection.findOne(query)
+  res.send(plan)
+})
+
+// subscription releted api
+app.post("/api/subscriptions", async (req, res) => {
+  const subInfo = req.body;
+
+  const newSubscription = {
+    email: subInfo.email,
+    planId: subInfo.planId,
+    createdAt: new Date(),
+  };
+
+  const result = await subscriptionsCollection.insertOne(newSubscription);
+
+  res.send(result);
+});
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
