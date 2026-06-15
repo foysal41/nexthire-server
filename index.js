@@ -19,6 +19,16 @@ app.get("/", (req, res) => {
 });
 
 
+const logger = (req, res, next) => {
+  console.log('Logger logged' , req.params)
+  next();
+}
+
+const verifyToken = (req, res, next) => {
+  console.log('headers', req.headers)
+  next()
+}
+
 
 const uri = "mongodb+srv://nesthire:nesthire@cluster0.8xvidah.mongodb.net/?appName=Cluster0";
 
@@ -44,7 +54,7 @@ async function run() {
     const planCollection = database.collection('plans')
     const subscriptionCollection = database.collection('subscriptions')
 
-app.get("/api/jobs", async(req, res)=> {
+app.get("/api/jobs", logger, verifyToken,  async(req, res)=> {
     const query = {}
    
      if(req.query.companyId){
